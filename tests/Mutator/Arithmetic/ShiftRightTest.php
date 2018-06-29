@@ -54,19 +54,4 @@ PHP
             ],
         ];
     }
-
-    public function test_replaces_post_decrement()
-    {
-        $code = '<?php $a = 1; $a >> 2;';
-        $mutatedCode = $this->mutate($code);
-
-        $expectedMutatedCode = <<<'PHP'
-<?php
-
-$a = 1;
-$a << 2;
-PHP;
-
-        $this->assertSame($expectedMutatedCode, $mutatedCode);
-    }
 }

@@ -68,8 +68,9 @@ function test()
 }
 PHP;
 
-        $mutatedCode = $this->mutate($code);
-        $this->assertSame($code, $mutatedCode);
+        $mutations = $this->mutate($code);
+
+        $this->assertCount(0, $mutations);
     }
 
     public function test_it_does_not_mutate_when_function_contains_another_function_but_return_null_is_not_allowed()
@@ -80,26 +81,9 @@ PHP;
 
         $code = $this->getFileContent('fc-contains-another-func-and-null-is-not-allowed.php');
 
-        $mutatedCode = $this->mutate($code);
+        $mutations = $this->mutate($code);
 
-        $expectedMutatedCode = <<<"PHP"
-<?php
-
-namespace FunctionCall_ContainsAnotherFunctionAndNullIsNotAllowed;
-
-class Test
-{
-    function test() : int
-    {
-        \$a = function (\$element) : ?int {
-            return \$element;
-        };
-        return count([]);
-    }
-}
-PHP;
-
-        $this->assertSame($expectedMutatedCode, $mutatedCode);
+        $this->assertCount(0, $mutations);
     }
 
     public function test_it_mutates_when_return_typehint_fqcn_allows_null()
@@ -109,7 +93,7 @@ PHP;
         }
 
         $code = $this->getFileContent('fc-mutates-return-typehint-fqcn-allows-null.php');
-        $mutatedCode = $this->mutate($code);
+        $mutations = $this->mutate($code);
 
         $expectedMutatedCode = <<<"PHP"
 <?php
@@ -126,7 +110,8 @@ class Test
 }
 PHP;
 
-        $this->assertSame($expectedMutatedCode, $mutatedCode);
+        $this->assertSame($expectedMutatedCode, $mutations[0]);
+        $this->assertCount(1, $mutations);
     }
 
     public function test_it_mutates_when_scalar_return_typehint_allows_null()
@@ -136,7 +121,7 @@ PHP;
         }
 
         $code = $this->getFileContent('fc-mutates-scalar-return-typehint-allows-null.php');
-        $mutatedCode = $this->mutate($code);
+        $mutations = $this->mutate($code);
 
         $expectedMutatedCode = <<<"PHP"
 <?php
@@ -153,7 +138,8 @@ class Test
 }
 PHP;
 
-        $this->assertSame($expectedMutatedCode, $mutatedCode);
+        $this->assertSame($expectedMutatedCode, $mutations[0]);
+        $this->assertCount(1, $mutations);
     }
 
     public function test_it_mutates_when_function_contains_another_function_but_returns_function_call_and_null_allowed()
@@ -163,7 +149,7 @@ PHP;
         }
 
         $code = $this->getFileContent('fc-contains-another-func-and-null-allowed.php');
-        $mutatedCode = $this->mutate($code);
+        $mutations = $this->mutate($code);
 
         $expectedMutatedCode = <<<"PHP"
 <?php
@@ -183,7 +169,8 @@ class Test
 }
 PHP;
 
-        $this->assertSame($expectedMutatedCode, $mutatedCode);
+        $this->assertSame($expectedMutatedCode, $mutations[0]);
+        $this->assertCount(1, $mutations);
     }
 
     private function getFileContent(string $file): string

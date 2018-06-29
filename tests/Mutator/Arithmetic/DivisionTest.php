@@ -52,18 +52,4 @@ PHP
             ],
         ];
     }
-
-    public function test_replaces_division_with_multiplication()
-    {
-        $code = '<?php 1 / 2;';
-        $mutatedCode = $this->mutate($code);
-
-        $expectedMutatedCode = <<<'PHP'
-<?php
-
-1 * 2;
-PHP;
-
-        $this->assertSame($expectedMutatedCode, $mutatedCode);
-    }
 }
